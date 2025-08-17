@@ -1,69 +1,164 @@
-# React + TypeScript + Vite
+InputField Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A highly flexible and accessible input component built with React, TypeScript, and Tailwind CSS. It supports various states, visual variants, and optional features like clear and password toggles, designed for seamless integration and robust user interaction.
+🚀 Overview
 
-Currently, two official plugins are available:
+The InputField component is designed for modularity and reusability, providing a consistent and customizable text input solution across your application. Its styling leverages Tailwind CSS for efficiency and responsiveness, including built-in support for light and dark themes when the parent container has the dark class.
+🧩 Features:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+    Text Input: Basic text input functionality with clear label, placeholder, helperText, and errorMessage props.
 
-## Expanding the ESLint configuration
+    States: Visually distinct states for disabled, invalid (for validation feedback), and loading (with an integrated spinner).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+    Variants: Three distinct visual styles:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+        filled: Has a solid background.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+        outlined: Features a clear border.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
+        ghost: Minimal styling, often just a bottom border on focus/hover.
+
+    Sizes: Control the input's size with sm (small), md (medium), and lg (large) options.
+
+    Optional Clear Button: A clickable icon appears inside the input to clear its content when showClearButton is true and the input has a value.
+
+    Optional Password Toggle: For inputs with type="password", a toggle button allows users to show or hide the password.
+
+    Theme Support: Automatically adapts to light and dark modes based on your Tailwind CSS configuration and the presence of a dark class on a parent element.
+
+    Accessibility: Utilizes useId for unique IDs to link labels and inputs, and includes aria-invalid for screen readers.
+
+📦 Props:
+
+interface InputFieldProps {
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label?: string;
+  placeholder?: string;
+  helperText?: string;
+  errorMessage?: string;
+  disabled?: boolean;
+  invalid?: boolean;
+  variant?: 'filled' | 'outlined' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  showClearButton?: boolean;
+  type?: 'text' | 'password';
+  isLoading?: boolean;
+  className?: string; // Optional custom Tailwind CSS classes
+}
+
+🧑‍💻 Usage Example:
+
+To integrate InputField into your React application, import it and pass the necessary props:
+
+import React, { useState } from 'react';
+import InputField from './components/InputField/InputField'; // Adjust path as per your project structure
+
+const MyForm = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test@example.com');
+  const [emailError, setEmailError] = useState(false);
+
+  return (
+    <div className="p-4 space-y-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Input Field Examples</h2>
+
+      <InputField
+        label="Username"
+        placeholder="Enter your username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        helperText="This is your unique identifier."
+        variant="outlined"
+        size="md"
+      />
+
+      <InputField
+        label="Password"
+        placeholder="Enter your password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        showClearButton
+        variant="filled"
+      />
+
+      <InputField
+        label="Email"
+        placeholder="your@example.com"
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setEmailError(!e.target.value.includes('@')); // Simple validation example
+        }}
+        invalid={emailError}
+        errorMessage="Please enter a valid email address."
+        variant="ghost"
+      />
+
+      <InputField
+        label="Disabled Field"
+        value="You cannot edit this"
+        disabled
+        size="sm"
+        helperText="This field is currently inactive."
+      />
+
+      <InputField
+        label="Loading Data"
+        placeholder="Fetching..."
+        isLoading
+        size="lg"
+      />
+    </div>
+  );
+};
+
+export default MyForm;
+
+📚 Storybook Integration:
+
+The InputField component is designed to be easily documented and tested within Storybook. You would create an InputField.stories.tsx file alongside your component to define various states and interactions.
+
+Example InputField.stories.tsx structure:
+
+// src/components/InputField/InputField.stories.tsx
+import React from 'react';
+import { Meta, StoryObj } from '@storybook/react';
+import InputField from './InputField'; // Adjust path if necessary
+
+const meta: Meta<typeof InputField> = {
+  title: 'Components/InputField',
+  component: InputField,
+  parameters: {
+    layout: 'centered',
   },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
+  tags: ['autodocs'],
+  argTypes: {
+    // ... define argTypes based on InputFieldProps
   },
-])
-```
+};
+
+export default meta;
+
+type Story = StoryObj<typeof InputField>;
+
+export const Default: Story = {
+  args: {
+    label: 'Username',
+    placeholder: 'Enter your username',
+  },
+};
+
+export const InvalidState: Story = {
+  args: {
+    label: 'Email',
+    value: 'invalid@example',
+    invalid: true,
+    errorMessage: 'Please enter a valid email address.',
+  },
+};
+
+// ... more stories for other variants, sizes, and features
+
